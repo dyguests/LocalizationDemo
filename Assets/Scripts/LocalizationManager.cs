@@ -6,18 +6,22 @@ using System.IO;
 
 public class LocalizationManager : MonoBehaviour
 {
+	public static LocalizationManager instance;
+	
 	private Dictionary<string,string> localizedText;
+	private bool isReady = false;
+	private string missingTextString = "Localized not found";
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
 	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-	
+		if (instance == null) {
+			instance = this;
+		} else if (instance != this) {
+			Destroy (this);
+		}
+
+		DontDestroyOnLoad (gameObject);
 	}
 
 	public void LoadLocalizedText (string fileName)
@@ -37,5 +41,21 @@ public class LocalizationManager : MonoBehaviour
 		} else {
 			Debug.LogError ("Cannot find file!");
 		}
+
+		isReady = true;//should it in if condition?
+	}
+
+	public string GetLocalizedValue (string value)
+	{
+		string result = missingTextString;
+		if (localizedText.ContainsKey (value)) {
+			result = localizedText [value];
+		}
+		return result;
+	}
+
+	public bool GetIsReady ()
+	{
+		return isReady;
 	}
 }
